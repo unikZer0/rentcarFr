@@ -1,69 +1,134 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Car Management')
 
 @section('content_header')
-    <h1 class="title">viewcar</h1>
-@stop
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Car Management</h1>
 
+    </div>
+@stop
 
 @section('content')
-        <p class="mb-2">Car List</p>
-    <table class="table table-bordered text-center align-middle shadow-lg">
-    <thead class="table-dark">
-        <tr>
-            <th>Car By</th>
-            <th>Car ID</th>
-            <th>CarName</th>
-            <th>Cartype</th>
-            <th>Describtions</th>
-            <th>price</th>
-            <th>Image</th>
-            <th>Status</th>
-            <th>action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($cardata as $data)
-            <tr><td>{{$data->user->name}}</td>
-                <td>{{ $data->car_id }}</td>
-                <td>{{ $data->car_name }}</td>
-                <td>{{ $data->carType->car_type_name }}</td>
-                <td>{{ $data->descriptions }}</td>
-                <td>{{ $data->price_daily }}</td>
-                <td>
-                    <img src="{{ asset($data->image) }}" id="myImg" alt="" width="80" height="80">
-                    {{-- <div id="myModal" class="modal">
-                        <span class="close">&times;</span>
-                        <img class="modal-content" id="img01">
-                        <div id="caption"></div>
-                      </div> --}}
-                </td>
-                <td>{{ $data->car_status }}</td>
-                <td>
-                        <form action="{{ route('admin.deletecar', ['id' => $data->car_id]) }}" method="get">
-                            <button class="edit btn btn-primary" data-id="{{ $data->car_id }}" data-bs-toggle="modal" data-bs-target="#addCarModalEdit">
-                                <i class="fa fa-edit"></i>
-                            </button>
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fa fa-trash"></i> 
-                            </button>
-                        </form>
-                    </td>
-                </td>
-            </tr>
-        @endforeach
-    </tbody>
-    </table>
-    {!!$cardata->links('pagination::bootstrap-5')!!}
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th class="py-3 px-4 text-left">Car By</th>
+                        <th class="py-3 px-4 text-left">Car ID</th>
+                        <th class="py-3 px-4 text-left">Car Name</th>
+                        <th class="py-3 px-4 text-left">Car Type</th>
+                        <th class="py-3 px-4 text-left">Description</th>
+                        <th class="py-3 px-4 text-left">Price</th>
+                        <th class="py-3 px-4 text-left">Image</th>
+                        <th class="py-3 px-4 text-left">Status</th>
+                        <th class="py-3 px-4 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @foreach ($cardata as $data)
+                        <tr class="hover:bg-gray-50 transition-colors duration-200">
+                            <td class="py-3 px-4">{{$data->user->name}}</td>
+                            <td class="py-3 px-4">{{ $data->car_id }}</td>
+                            <td class="py-3 px-4">{{ $data->car_name }}</td>
+                            <td class="py-3 px-4">{{ $data->carType->car_type_name }}</td>
+                            <td class="py-3 px-4 max-w-xs truncate">{{ $data->descriptions }}</td>
+                            <td class="py-3 px-4 font-medium text-green-600">{{ number_format($data->price_daily, 0) }} KIP</td>
+                            <td class="py-3 px-4">
+                                <img src="{{ asset($data->image) }}" class="myImg rounded-lg object-cover h-16 w-24 cursor-pointer hover:opacity-80 transition-opacity" alt="{{ $data->car_name }}">
+                            </td>
+                            <td class="py-3 px-4">
+                                @php
+                                    $statusClass = 'bg-gray-100 text-gray-800';
+                                    if($data->car_status == 'available') {
+                                        $statusClass = 'bg-green-100 text-green-800';
+                                    } elseif($data->car_status == 'rented') {
+                                        $statusClass = 'bg-blue-100 text-blue-800';
+                                    } elseif($data->car_status == 'maintenance') {
+                                        $statusClass = 'bg-yellow-100 text-yellow-800';
+                                    } elseif($data->car_status == 'out_of_service') {
+                                        $statusClass = 'bg-red-100 text-red-800';
+                                    }
+                                @endphp
+                                <span class="{{ $statusClass }} text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                    {{ $data->car_status }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex space-x-2">
+                            
+                                    <form action="{{ route('admin.deletecar', ['id' => $data->car_id]) }}" method="get" class="inline">
+                                        @method('DELETE')
+                                        <button class="edit btn btn-primary" data-id="{{ $data->car_id }}" data-bs-toggle="modal" data-bs-target="#addCarModalEdit">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            &nbsp;&nbsp;Edit&nbsp;&nbsp;
+                                        </button>
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this car?')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4">
+            {!! $cardata->links('pagination::tailwind') !!}
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="relative">
+            <button onclick="closeImageModal()" class="absolute top-2 right-2 text-white bg-red-500 rounded-full p-1 hover:bg-red-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <img id="modalImage" class="max-h-[50vh] max-w-[60vw] rounded-lg" src="" alt="">
+        </div>
+    </div>
 @stop
+
 @include('admin.editcar')
+
 @section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
 
     <script>
-        //insert edit
+        // Image modal functionality
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const images = document.querySelectorAll('.myImg');
+        
+        images.forEach(img => {
+            img.addEventListener('click', function() {
+                imageModal.classList.remove('hidden');
+                modalImage.src = this.src;
+                modalImage.alt = this.alt;
+            });
+        });
+        
+        function closeImageModal() {
+            imageModal.classList.add('hidden');
+        }
+        
+        // Close modal when clicking outside the image
+        imageModal.addEventListener('click', function(e) {
+            if (e.target === imageModal) {
+                closeImageModal();
+            }
+        });
+
+        // Edit car functionality
         $(document).on("click", ".edit", function(e) {
             e.preventDefault();
             var carID = $(this).data("id");
@@ -80,8 +145,8 @@
                     $('#car_nameEdit').val(data.carData.car_name);
                     $('#descriptionsEdit').val(data.carData.descriptions);
                     $('#price_dailyEdit').val(data.carData.price_daily);
-                    $('#car_type_idEdit').val(data.carData.car_type_id).selectpicker('refresh');
-                    $('#car_statusEdit').val(data.carData.car_status).selectpicker('refresh');
+                    $('#car_type_idEdit' + data.carData.car_id).val(data.carData.car_type_id).selectpicker('refresh');
+                    $('#car_statusEdit' + data.carData.car_id).val(data.carData.car_status).selectpicker('refresh');
                     $('#car_idEdit').val(data.carData.car_id);
                     $('#addCarModalEdit').modal('show');
                 },
@@ -90,7 +155,8 @@
                 }
             });
         });
-//update
+
+        // Update car functionality
         $("#updatetEditForm").on("submit", function(e) {
             e.preventDefault();
 
@@ -116,100 +182,45 @@
                 }
             });
         });
-        //img
-        var modal = document.getElementById("myModal");
-        var img = document.getElementById("myImg");
-        var modalImg = document.getElementById("img01");
-        var captionText = document.getElementById("caption");
-        img.onclick = function() {
-            modal.style.display = "block";
-            modalImg.src = this.src;
-            captionText.innerHTML = this.alt;
-        }
-        var span = document.getElementsByClassName("close")[0];
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 @stop
+
 @section('css')
-    {{-- Add Bootstrap Select CSS --}}
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
-    <link href="{{ asset('css/imgpopup.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
     <style>
-        .table {
-          width: 100%;
-          background: #ffffff;
-          border-radius: 8px;
-          overflow: hidden;
-          box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      }
-    
-      .table-dark {
-          background-color: #343a40;
-          color: white;
-          font-weight: bold;
-          text-transform: uppercase;
-          font-size: 14px;
-      }
-    
-      .table th {
-          padding: 12px 20px;
-      }
-    
-      .table tbody tr {
-          background-color: #f9f9f9;
-          transition: background-color 0.3s ease;
-      }
-    
-    
-      .table td {
-          padding: 12px 20px;
-          vertical-align: middle;
-          font-size: 14px;
-      }
-      .table td:last-child {
-          font-weight: bold;
-          color: #28a745;
-      }
-    
-      .table-bordered {
-          border: 1px solid #dee2e6;
-      }
-    
-      .table-bordered th, .table-bordered td {
-          border: 1px solid #dee2e6;
-      }
-    
-      /* Paginate */
-      .pagination {
-          justify-content: center;
-      }
-    
-      .pagination .page-item .page-link {
-          border-radius: 6px;
-          transition: 0.2s;
-      }
-    
-      .pagination .page-item .page-link:hover {
-          background-color: #007bff;
-          color: white;
-      }
-      .title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 15px;
-            text-align: center;
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            color: white;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 0.25rem;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 0.5rem;
         }
-        p.mb-2 {
-            font-size: 1.1rem;
-            color: #666;
-            text-align: center;
-            margin-bottom: 30px;
+        
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 0.25rem;
+            display: inline-flex;
+            align-items: center;
         }
-       </style>
+        
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+        
+        .btn-danger:hover {
+            background-color: #bb2d3b;
+            border-color: #b02a37;
+        }
+    </style>
 @stop

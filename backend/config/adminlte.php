@@ -442,6 +442,16 @@ return [
                 ],
             ],
         ],
+        'TailwindCSS' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css',
+                ],
+            ],
+        ],
         'Select2' => [
             'active' => false,
             'files' => [

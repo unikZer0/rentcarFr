@@ -21,7 +21,39 @@ class CarCtrl extends Controller
         return view('admin.viewcar', compact('cardata', 'cartypes'));
     }
     
-        public function createcar(Request $request)
+    public function addcar(Request $request)
+    {
+        $request->validate([
+            'car_name' => 'required',
+            'descriptions' => 'required',
+            'price_daily' => 'required|numeric',
+            'car_status' => 'required',
+            'car_type_id' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+    
+        $imagePath = null;
+    
+        if ($request->hasFile('image')) {
+            $filename = time() . '_' . $request->file('image')->getClientOriginalName();
+            $request->file('image')->storeAs('images', $filename, 'public');
+            $imagePath = 'storage/images/' . $filename;
+        }
+    
+        $data = new tbl_cars;
+        $data->user_id = auth()->user()->user_id;
+        $data->car_name = $request->car_name;
+        $data->descriptions = $request->descriptions;
+        $data->price_daily = $request->price_daily;
+        $data->car_status = $request->car_status;
+        $data->image = $imagePath;
+        $data->car_type_id = $request->car_type_id;
+        $data->save();
+    
+        return redirect()->route('admin.viewcar')->with('success', 'Car added successfully!');
+    }
+    
+    public function createcar(Request $request)
     {
         $data = $request->validate([
             'car_name' => 'required',

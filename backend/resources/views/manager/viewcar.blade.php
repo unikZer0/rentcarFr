@@ -1,75 +1,135 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Car Management')
 
 @section('content_header')
-    <h1 class="page-header">View Car</h1>
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Car Management</h1>
+        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center" data-bs-toggle="modal" data-bs-target="#addCarModal">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add New Car
+        </button>
+    </div>
 @stop
 
 
 @section('content')
-<div class="container mt-5 mb-3">
-    <button type="button" class="btn btn-info mb-1" data-bs-toggle="modal" data-bs-target="#addCarModal">
-        <i class="fa fa-plus"></i> Add Car
-    </button>
-</div>
-    <table class="table table-bordered text-center align-middle shadow-lg">
-        <thead class="table-dark">
-            <tr>
-                <th>Car ID</th>
-                <th>Car Name</th>
-                <th>Car Type</th>
-                <th>Description</th>
-                <th>Price (Daily)</th>
-                <th>Image</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($cardata as $data)
+<div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded-lg overflow-hidden">
+            <thead class="bg-gray-800 text-white">
                 <tr>
-                    <td>{{ $data->car_id }}</td>
-                    <td>{{ $data->car_name }}</td>
-                    <td>{{ $data->carType->car_type_name }}</td>
-                    <td>{{ $data->descriptions }}</td>
-                    <td>{{ number_format($data->price_daily, 2) }} KIP</td>
-                    <td>
-                        <img src="{{ asset($data->image) }}" class="img-thumbnail" alt="Car Image" width="80" height="80">
-                    </td>
-                    <td>
-                        <span class="badge {{ $data->car_status == 'Available' ? 'bg-success' : 'bg-danger' }}">
-                            {{ $data->car_status }}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="edit btn btn-primary btn-sm" data-id="{{ $data->car_id }}"
-                            data-bs-toggle="modal" data-bs-target="#addCarModalEdit">
-                            <i class="fa fa-edit"></i> Edit
-                        </button>
-                        <button type="button" class="btn btn-danger btn-sm"
-                            onclick="confirmDelete('{{ route('manager.deletecar', ['id' => $data->car_id]) }}')">
-                            <i class="fa fa-trash"></i> Delete
-                        </button>
-                    </td>
+                    <th class="py-3 px-4 text-left">Car ID</th>
+                    <th class="py-3 px-4 text-left">Car Name</th>
+                    <th class="py-3 px-4 text-left">Car Type</th>
+                    <th class="py-3 px-4 text-left">Description</th>
+                    <th class="py-3 px-4 text-left">Price (Daily)</th>
+                    <th class="py-3 px-4 text-left">Image</th>
+                    <th class="py-3 px-4 text-left">Status</th>
+                    <th class="py-3 px-4 text-left">Actions</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-    
-    {!! $cardata->links('pagination::bootstrap-5') !!}
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                @foreach ($cardata as $data)
+                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                        <td class="py-3 px-4">{{ $data->car_id }}</td>
+                        <td class="py-3 px-4">{{ $data->car_name }}</td>
+                        <td class="py-3 px-4">{{ $data->carType->car_type_name }}</td>
+                        <td class="py-3 px-4 max-w-xs truncate">{{ $data->descriptions }}</td>
+                        <td class="py-3 px-4 font-medium text-green-600">{{ number_format($data->price_daily, 2) }} KIP</td>
+                        <td class="py-3 px-4">
+                            <img src="{{ asset($data->image) }}" class="myImg rounded-lg object-cover h-16 w-24 cursor-pointer hover:opacity-80 transition-opacity" alt="{{ $data->car_name }}">
+                        </td>
+                        <td class="py-3 px-4">
+                            @php
+                                $statusClass = 'bg-gray-100 text-gray-800';
+                                if($data->car_status == 'Available') {
+                                    $statusClass = 'bg-green-100 text-green-800';
+                                } elseif($data->car_status == 'Maintenance') {
+                                    $statusClass = 'bg-yellow-100 text-yellow-800';
+                                } elseif($data->car_status == 'Rented') {
+                                    $statusClass = 'bg-blue-100 text-blue-800';
+                                } elseif($data->car_status == 'Out of Service') {
+                                    $statusClass = 'bg-red-100 text-red-800';
+                                }
+                            @endphp
+                            <span class="{{ $statusClass }} text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                {{ $data->car_status }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4">
+                            <div class="flex space-x-2">
+                                <button class="edit bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition-colors duration-300 flex items-center text-sm" data-id="{{ $data->car_id }}" data-bs-toggle="modal" data-bs-target="#addCarModalEdit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    Edit
+                                </button>
+                                <button type="button" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors duration-300 flex items-center text-sm" onclick="confirmDelete('{{ route('manager.deletecar', ['id' => $data->car_id]) }}')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
+    <div class="mt-4">
+        {!! $cardata->links('pagination::tailwind') !!}
+    </div>
+</div>
 
-    @include('manager.create')
+<!-- Image Modal -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+    <div class="relative">
+        <button onclick="closeImageModal()" class="absolute top-2 right-2 text-white bg-red-500 rounded-full p-1 hover:bg-red-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <img id="modalImage" class="max-h-[50vh] max-w-[60vw] rounded-lg" src="" alt="">
+    </div>
+</div>
+
+@include('manager.create')
 @stop
 @include('manager.editcar')
 @section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
     <script>
-        //sweet alert 
+        // Image modal functionality
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const images = document.querySelectorAll('.myImg');
+        
+        images.forEach(img => {
+            img.addEventListener('click', function() {
+                imageModal.classList.remove('hidden');
+                modalImage.src = this.src;
+                modalImage.alt = this.alt;
+            });
+        });
+        
+        function closeImageModal() {
+            imageModal.classList.add('hidden');
+        }
+        
+        // Close modal when clicking outside the image
+        imageModal.addEventListener('click', function(e) {
+            if (e.target === imageModal) {
+                closeImageModal();
+            }
+        });
+
+        // Sweet alert for delete confirmation
         function confirmDelete(deleteUrl) {
             Swal.fire({
                 title: "Are you sure?",
@@ -86,9 +146,7 @@
             });
         }
 
-
-
-        //insert edit
+        // Edit car functionality
         $(document).on("click", ".edit", function(e) {
             e.preventDefault();
             var carID = $(this).data("id");
@@ -115,7 +173,8 @@
                 }
             });
         });
-        //update
+
+        // Update car functionality
         $("#updatetEditForm").on("submit", function(e) {
             e.preventDefault();
 
@@ -141,28 +200,14 @@
                 }
             });
         });
-        //img
-        var modal = document.getElementById("myModal");
-        var img = document.getElementById("myImg");
-        var modalImg = document.getElementById("img01");
-        var captionText = document.getElementById("caption");
-        img.onclick = function() {
-            modal.style.display = "block";
-            modalImg.src = this.src;
-            captionText.innerHTML = this.alt;
-        }
-        var span = document.getElementsByClassName("close")[0];
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 @stop
 @section('css')
     {{-- Add Bootstrap Select CSS --}}
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <style>
             .page-header {
                 font-size: 32px;

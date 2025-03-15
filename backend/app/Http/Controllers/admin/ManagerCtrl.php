@@ -62,4 +62,30 @@ class ManagerCtrl extends Controller
             $data->delete();
             return redirect()->route('admin.viewmanager')->with('success', "car deleted");
         }
+
+    public function addmanager(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->role_id = 2; // Manager role
+
+        if ($request->hasFile('image')) {
+            $filename = time() . '_' . $request->file('image')->getClientOriginalName();
+            $filePath = $request->file('image')->storeAs('profile_images', $filename, 'public');
+            $user->image = 'profile_images/' . $filename;
+        }
+
+        $user->save();
+
+        return redirect()->route('admin.viewmanager')->with('success', 'Staff member added successfully!');
+    }
 }

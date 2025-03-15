@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f8f8;
+}
+
+/* Car card styles */
+.car-card {
+  @apply transition-all duration-700;
+  box-shadow: 0 20px 30px -5px rgba(0, 0, 0, 0.15), 0 10px 15px -5px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  max-width: 100%;
+  transform: translateY(0);
+  border-width: 2px !important;
+}
+
+.car-card:hover {
+  box-shadow: 0 40px 60px -10px rgba(0, 0, 0, 0.25), 0 20px 30px -10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-16px) scale(1.03);
+}
+
+.car-card > div:last-child {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.car-card > div:last-child > button {
+  margin-top: auto;
+}
+
+.car-image-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  font-size: 2rem;
+}
+
+/* Status badge styles */
+.status-badge {
+  @apply px-6 py-3 rounded-full text-lg font-bold shadow-xl;
+}
+
+.status-available {
+  @apply bg-green-100 text-green-800 border-2 border-green-300;
+}
+
+.status-unavailable {
+  @apply bg-red-100 text-red-800 border-2 border-red-300;
+}
+
+/* Custom animation for loading */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Grid layout for car cards */
+.car-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 2.5rem;
+}
+
+@media (min-width: 640px) {
+  .car-grid {
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .car-grid {
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .car-grid {
+    grid-template-columns: repeat(auto-fill, minmax(550px, 1fr));
+  }
+}
+
+/* Button styles */
+button {
+  transition: all 0.4s ease;
+}
+
+button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Custom styles for specific elements */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.025em;
+}
+
+.text-orange-500 {
+  color: #ff4d30 !important;
+}
+
+.bg-orange-500 {
+  background-color: #ff4d30 !important;
+}
+
+.bg-orange-600 {
+  background-color: #e6441b !important;
+}
+
+.bg-orange-700 {
+  background-color: #d13d19 !important;
+}
+
+.hover\:bg-orange-600:hover {
+  background-color: #e6441b !important;
+}
+
+.active\:bg-orange-700:active {
+  background-color: #d13d19 !important;
+}
+
+/* Custom styles can go here */ 

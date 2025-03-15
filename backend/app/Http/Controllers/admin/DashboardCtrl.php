@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Order;
 use App\Models\tbl_cars;
 use App\Models\User;
+use Carbon\Carbon;
 
 class DashboardCtrl extends Controller
 {
@@ -44,9 +45,40 @@ class DashboardCtrl extends Controller
             ->groupBy('year')
             ->orderByDesc('year')
             ->get();
-            $managertotal = User::where('role_id',2)->get()->count();
-            $cartotal = tbl_cars::all()->count();
+        $managertotal = User::where('role_id',2)->get()->count();
+        $cartotal = tbl_cars::all()->count();
 
-        return view('admin.dashboard', compact('orderCount', 'managertotal', 'salesPerYear', 'orderdata','cartotal','bookingdata'));
+        // Prepare chart data for the last 12 months
+        $chartData = [];
+        for($i = 11; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            
+            // Count bookings for this month
+            $bookingsCount = Booking::whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->count();
+            
+            // Calculate revenue for this month using booking.created_at
+            $revenue = Order::join('booking', 'order.book_id', '=', 'booking.book_id')
+                ->whereYear('booking.created_at', $month->year)
+                ->whereMonth('booking.created_at', $month->month)
+                ->sum('order.total');
+            
+            $chartData[] = [
+                'month' => $month->format('M'),
+                'bookings' => $bookingsCount,
+                'revenue' => $revenue ?? 0
+            ];
+        }
+
+        return view('admin.dashboard', compact(
+            'orderCount', 
+            'managertotal', 
+            'salesPerYear', 
+            'orderdata',
+            'cartotal',
+            'bookingdata',
+            'chartData'
+        ));
     }
 }

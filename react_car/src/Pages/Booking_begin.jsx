@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import BookCar from "../components/BookCar";
 import HeroPages from "../components/HeroPages";
 import Swal from "sweetalert2";
+import { FaCar, FaGasPump, FaUsers, FaCog } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 import "../dist/styles.css";
 
 function Booking_begin() {
@@ -146,61 +148,100 @@ function Booking_begin() {
     <>
       <HeroPages name="ຄົ້ນຫາ" />
       <BookCar />
-      <div className="booking">
-        <h1>ຜົນການຄົ້ນຫາ: ລົດທີ່ມີທັງຫມົດ</h1>
-        <div className="booking__cards">
-          {carList.map((car, index) => {
-            const { days, total } = calculateDaysAndTotal(
-              pickTime,
-              dropTime,
-              car.price_daily
-            );
-            return (
-              <div className="car-card" key={index}>
-                {/* <p>{car.car_id}</p> */}
-                <img
-                  src={`http://localhost:8000/${car.image}`}
-                  alt={car.car_name}
-                  className="car-card__image"
-                />
-                <div className="car-card__content">
-                  <h3 className="car-card__title">{car.car_name}</h3>
-                  <h2 className="car-card__description">{car.descriptions}</h2>
-                  <h2 className="car-card__user_name">ໂດຍ: {car.user.name}</h2>
-                  <h2 className="car-card__description">
-                    ປະເພດ: {car.car_type.car_type_name}
-                  </h2>
-                  <div className="stroke">
-                    <h1
-                      className={`car-card__status status-${car.car_status.toLowerCase()}`}
-                    >
-                      ສະຖານະ: {car.car_status}
-                    </h1>
+      <div className="container mx-auto px-4 py-16">
+        <motion.h1 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-5xl font-extrabold text-center mb-16 text-gray-800"
+        >
+          ຜົນການຄົ້ນຫາ: <span className="text-orange-500">ລົດທີ່ມີທັງຫມົດ</span>
+        </motion.h1>
+        
+        {carList.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-xl text-gray-600">ບໍ່ພົບລົດທີ່ຄົ້ນຫາ</p>
+          </div>
+        ) : (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="flex flex-wrap gap-16"
+          >
+            {carList.map((car, index) => {
+              const { days, total } = calculateDaysAndTotal(
+                pickTime,
+                dropTime,
+                car.price_daily
+              );
+              return (
+                <motion.div
+                  key={index}
+                  whileHover={{ scale: 1.02 }}
+                  className="car-card bg-white rounded-3xl overflow-hidden border border-gray-100"
+                >
+                  <div className="relative">
+                    <img
+                      src={`http://localhost:8000/${car.image}`}
+                      alt={car.car_name}
+                      className="w-full h-[400px] object-cover"
+                    />
+                    <div className="absolute top-6 right-6">
+                      <span 
+                        className={`status-badge ${
+                          car.car_status === "Available" ? "status-available" : "status-unavailable"
+                        }`}
+                      >
+                        {car.car_status}
+                      </span>
+                    </div>
                   </div>
-                  <div className="car-card__price">
-                    <h4 className="car-card__price-amount">
-                      {car.price_daily} ₭/ວັນ
-                    </h4>
-                    <p className="car-card__price-total">
-                      {isNaN(total)
-                        ? "ບໍ່ສາມາດຄິດໄລ່ລາຄາໄດ້"
-                        : `ລວມ ${days} ວັນ  ${total} ₭`}
-                    </p>
-                  </div>
-                  <div className="car-card-bnt">
+                  
+                  <div className="p-8">
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-3xl font-bold text-gray-800">{car.car_name || "ບໍ່ມີຊື່"}</h2>
+                      <p className="text-3xl font-bold text-orange-500">{car.price_daily} ₭/ວັນ</p>
+                    </div>
+                    
+                    <p className="text-xl text-gray-600 mb-8">{car.descriptions}</p>
+                    
+                    <div className="grid grid-cols-2 gap-6 mb-8">
+                      <div className="flex items-center gap-3 text-lg">
+                        <FaUsers className="text-orange-500 text-2xl" />
+                        <span>ໂດຍ: {car.user?.name || "ບໍ່ມີຂໍ້ມູນ"}</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-lg">
+                        <FaCar className="text-orange-500 text-2xl" />
+                        <span>ປະເພດ: {car.car_type?.car_type_name || "ບໍ່ມີຂໍ້ມູນ"}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-8">
+                      <p className="text-xl text-gray-700 font-semibold">
+                        {isNaN(total)
+                          ? "ບໍ່ສາມາດຄິດໄລ່ລາຄາໄດ້"
+                          : `ລວມ ${days} ວັນ: ${total} ₭`}
+                      </p>
+                    </div>
+                    
                     <button
                       onClick={(e) => openrent(e, car, car.car_id)}
-                      className="car-card-bnt__button"
+                      className={`w-full py-4 text-xl font-bold rounded-xl transition-all ${
+                        car.car_status === "Available"
+                          ? "bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
                       disabled={car.car_status !== "Available"}
                     >
                       ເຊົ່າລົດ
                     </button>
                   </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
       </div>
     </>
   );

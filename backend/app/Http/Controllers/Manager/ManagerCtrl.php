@@ -23,6 +23,9 @@ class ManagerCtrl extends Controller
                           ->orderByDesc('book_id')
                           ->limit(5)->paginate(5);
         $orderCount = Order::whereIn('book_id', $bookingdata->pluck('book_id'))->count();
+        $availableCars = tbl_cars::where('user_id', $userID)
+                                ->where('car_status', 'Available')
+                                ->count();
         $salesPerMonth = Booking::selectRaw('
                 YEAR(created_at) AS year,
                 MONTH(created_at) AS month,
@@ -45,7 +48,7 @@ class ManagerCtrl extends Controller
             ->groupBy('year')
             ->orderByDesc('year')
             ->get();
-        return view('manager.index', compact('orderCount', 'salesPerMonth','salesPerYear','orderdata'));
+        return view('manager.index', compact('orderCount', 'salesPerMonth', 'salesPerYear', 'orderdata', 'availableCars'));
     }
 
     public function logout(){

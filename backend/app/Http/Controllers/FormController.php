@@ -23,11 +23,6 @@ class FormController extends Controller
 
     public function store(Request $request)
     {
-        // if ($request->hasFile('image')) {
-        //     return response()->json(['message' => 'File received', 'file' => $request->file('image')->getClientOriginalName()]);
-        // } else {
-        //     return response()->json(['error' => 'No file received'], 400);
-        // }
         
         try {
     
