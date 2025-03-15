@@ -40,7 +40,7 @@
                     <td>{{ $order->booking->start }}</td>
                     <td>{{ $order->booking->end }}</td>
                     <td>{{ $order->days }}</td>
-                    <td>{{ number_format($order->total, 3) }} KIP</td>
+                    <td>{{ number_format($order->total) }} KIP</td>
                 </tr>
             @endforeach
         </tbody>

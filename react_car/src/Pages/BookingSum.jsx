@@ -22,25 +22,6 @@ function BookingSummary() {
     total,
     formData,
   } = location.state || {};
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       const response = await axios.get("http://localhost:8000/api/users/show");
-  //       if (Array.isArray(response.data.data)) {
-  //         setUserList(response.data.data);
-  //       } else {
-  //         throw new Error("Invalid data format received from the server");
-  //       }
-  //     } catch (err) {
-  //       setError(err.message);
-  //     }
-  //   };
-  
-  //   fetchUser();
-  // }, []);
-  // console.log(userList)
-  
-  
   const handleConfirmBooking = () => {
     navigate('/bookingconfirmation');
   };

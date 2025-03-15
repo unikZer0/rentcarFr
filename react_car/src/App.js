@@ -1,6 +1,7 @@
 import "../src/dist/styles.css";
 import Home from "./Pages/Home";
 import Navbar from "../src/components/Navbar";
+import Footer from "../src/components/Footer";
 import { Route, Routes } from "react-router-dom"; 
 import Team from "./Pages/Team";
 import Form from "./Pages/From";
@@ -25,6 +26,7 @@ function App() {
         <Route path="order" element={<Order />} />
         
       </Routes>
+      <Footer />
     </>
   );
 }

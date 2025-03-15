@@ -350,6 +350,14 @@ return [
                     'can' => 'admin',
                 ],
                 [
+                    'text' => 'Contact Messages',
+                    'icon' => 'fas fa-fw fa-envelope',
+                    'url' => 'admin/messages',
+                    'can' => 'admin',
+                    'label' => 'New',
+                    'label_color' => 'success',
+                ],
+                [
                     'text' => 'Register',
                     'icon' => 'fas fa-user-plus',
                     'url' => 'admin/register',

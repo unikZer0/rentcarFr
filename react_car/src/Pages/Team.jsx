@@ -42,7 +42,6 @@ function Team() {
             </div>
           </div>
         </div>
-        <Footer />
       </section>
     </>
   );

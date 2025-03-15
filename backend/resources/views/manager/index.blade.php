@@ -59,10 +59,15 @@
                         @if ($salesPerMonth->isEmpty())
                             <h3 class="text-3xl font-bold mt-1">0 KIP</h3>
                         @else
-                            @foreach($salesPerMonth as $sales)
-                                <p class="text-xs font-medium mt-1">{{ \Carbon\Carbon::createFromDate($sales->year, $sales->month, 1)->format('F Y') }}</p>
-                                <h3 class="text-3xl font-bold mt-1">{{ number_format($sales->total_sales, 0) }} KIP</h3>
+                            @foreach($salesPerMonth as $index => $sales)
+                                @if($index === 0)
+                                    <p class="text-xs font-medium mt-1">{{ \Carbon\Carbon::createFromDate($sales->year, $sales->month, 1)->format('F Y') }}</p>
+                                    <h3 class="text-3xl font-bold mt-1">{{ number_format($sales->total_sales, 0) }} KIP</h3>
+                                @endif
                             @endforeach
+                            @if(count($salesPerMonth) > 1)
+                                <p class="text-xs text-white mt-2">+{{ count($salesPerMonth) - 1 }} more months</p>
+                            @endif
                         @endif
                     </div>
                     <div class="bg-white bg-opacity-30 p-3 rounded-lg">
@@ -72,7 +77,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <a href="#" class="text-white text-sm font-medium hover:underline flex items-center">
+                    <a href="#" class="text-white text-sm font-medium hover:underline flex items-center" onclick="openMonthlyReportModal(); return false;">
                         View Report
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -104,7 +109,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <a href="#" class="text-white text-sm font-medium hover:underline flex items-center">
+                    <a href="#" class="text-white text-sm font-medium hover:underline flex items-center" onclick="openYearlyReportModal(); return false;">
                         View Report
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -331,6 +336,109 @@
             {!! $orderdata->links('pagination::tailwind') !!}
         </div>
     </div>
+
+    <!-- Income Chart Section -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800">Income Trends</h2>
+            <div class="flex space-x-2">
+                <button id="showMonthlyChart" class="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm font-medium">Monthly</button>
+                <button id="showYearlyChart" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium">Yearly</button>
+            </div>
+        </div>
+        <div class="h-80">
+            <div id="chartLoading" class="flex items-center justify-center h-full">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+            <canvas id="incomeChart" class="hidden"></canvas>
+        </div>
+    </div>
+
+    <!-- Monthly Income Report Modal -->
+    <div id="monthlyReportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Monthly Income Report</h2>
+                <button onclick="closeMonthlyReportModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Income</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach($salesPerMonth as $sales)
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-3 px-4">{{ \Carbon\Carbon::createFromDate($sales->year, $sales->month, 1)->format('F') }}</td>
+                                <td class="py-3 px-4">{{ $sales->year }}</td>
+                                <td class="py-3 px-4 font-medium text-green-600">{{ number_format($sales->total_sales, 0) }} KIP</td>
+                            </tr>
+                        @endforeach
+                        @if($salesPerMonth->isEmpty())
+                            <tr>
+                                <td colspan="3" class="py-4 px-4 text-center text-gray-500">No monthly income data available</td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button onclick="closeMonthlyReportModal()" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yearly Income Report Modal -->
+    <div id="yearlyReportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Yearly Income Report</h2>
+                <button onclick="closeYearlyReportModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Income</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach($salesPerYear as $item)
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-3 px-4">{{ $item->year }}</td>
+                                <td class="py-3 px-4 font-medium text-green-600">{{ number_format($item->total_sales, 0) }} KIP</td>
+                            </tr>
+                        @endforeach
+                        @if($salesPerYear->isEmpty())
+                            <tr>
+                                <td colspan="2" class="py-4 px-4 text-center text-gray-500">No yearly income data available</td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button onclick="closeYearlyReportModal()" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
 @stop
 
 @section('css')
@@ -377,6 +485,27 @@
             color: white;
             border-color: #3b82f6;
         }
+        
+        /* Performance optimizations */
+        img {
+            content-visibility: auto;
+        }
+        
+        /* Reduce layout shifts */
+        .card-placeholder {
+            min-height: 100px;
+        }
+        
+        /* Optimize for mobile */
+        @media (max-width: 640px) {
+            .grid {
+                gap: 1rem;
+            }
+            
+            .p-6 {
+                padding: 1rem;
+            }
+        }
     </style>
 @stop
 
@@ -385,9 +514,133 @@
     <script>
         console.log("Manager dashboard loaded");
         
-        // Add any additional JavaScript for interactive elements here
+        // Monthly report modal functions
+        function openMonthlyReportModal() {
+            document.getElementById('monthlyReportModal').classList.remove('hidden');
+        }
+        
+        function closeMonthlyReportModal() {
+            document.getElementById('monthlyReportModal').classList.add('hidden');
+        }
+        
+        // Yearly report modal functions
+        function openYearlyReportModal() {
+            document.getElementById('yearlyReportModal').classList.remove('hidden');
+        }
+        
+        function closeYearlyReportModal() {
+            document.getElementById('yearlyReportModal').classList.add('hidden');
+        }
+        
+        // Chart initialization
         document.addEventListener('DOMContentLoaded', function() {
-            // You can add chart initializations or other interactive elements here
+            // Prepare data for charts
+            const monthlyData = @json($salesPerMonth);
+            const yearlyData = @json($salesPerYear);
+            
+            // Format data for Chart.js
+            const monthlyChartData = {
+                labels: monthlyData.map(item => {
+                    const date = new Date(item.year, item.month - 1);
+                    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                }),
+                datasets: [{
+                    label: 'Monthly Income (KIP)',
+                    data: monthlyData.map(item => item.total_sales),
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 2,
+                    borderRadius: 5,
+                    tension: 0.3
+                }]
+            };
+            
+            const yearlyChartData = {
+                labels: yearlyData.map(item => item.year),
+                datasets: [{
+                    label: 'Yearly Income (KIP)',
+                    data: yearlyData.map(item => item.total_sales),
+                    backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    borderWidth: 2,
+                    borderRadius: 5
+                }]
+            };
+            
+            // Chart configuration
+            const chartConfig = {
+                type: 'bar',
+                data: monthlyChartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('en-US').format(context.parsed.y) + ' KIP';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('en-US', { 
+                                        notation: 'compact',
+                                        compactDisplay: 'short'
+                                    }).format(value) + ' KIP';
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            // Initialize chart
+            const ctx = document.getElementById('incomeChart').getContext('2d');
+            const incomeChart = new Chart(ctx, chartConfig);
+            
+            // Hide loading indicator and show chart
+            document.getElementById('chartLoading').classList.add('hidden');
+            document.getElementById('incomeChart').classList.remove('hidden');
+            
+            // Toggle between monthly and yearly data
+            document.getElementById('showMonthlyChart').addEventListener('click', function() {
+                incomeChart.data = monthlyChartData;
+                incomeChart.options.scales.y.beginAtZero = true;
+                incomeChart.update();
+                
+                // Update button styles
+                this.classList.remove('bg-gray-200', 'text-gray-700');
+                this.classList.add('bg-blue-500', 'text-white');
+                document.getElementById('showYearlyChart').classList.remove('bg-blue-500', 'text-white');
+                document.getElementById('showYearlyChart').classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            document.getElementById('showYearlyChart').addEventListener('click', function() {
+                incomeChart.data = yearlyChartData;
+                incomeChart.options.scales.y.beginAtZero = true;
+                incomeChart.update();
+                
+                // Update button styles
+                this.classList.remove('bg-gray-200', 'text-gray-700');
+                this.classList.add('bg-blue-500', 'text-white');
+                document.getElementById('showMonthlyChart').classList.remove('bg-blue-500', 'text-white');
+                document.getElementById('showMonthlyChart').classList.add('bg-gray-200', 'text-gray-700');
+            });
         });
     </script>
 @stop

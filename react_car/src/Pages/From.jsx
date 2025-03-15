@@ -24,7 +24,7 @@ function CarRental() {
     index,
   } = location.state || {};
 
-  // upimage
+  // ອັບໂຫລດຮູບພາບ
   const [imagePreviews, setImagePreviews] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
 
@@ -34,7 +34,7 @@ function CarRental() {
     const newImageFiles = [];
     const newImagePreviews = [];
 
-    // อ่านไฟล์รูปภาพและสร้าง URL สำหรับแสดงตัวอย่าง
+    // ອ່ານໄຟລ໌ຮູບພາບແລະສ້າງ URL ສຳລັບສະແດງຕົວຢ່າງ
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const reader = new FileReader();
@@ -43,10 +43,10 @@ function CarRental() {
         newImagePreviews.push({
           id: URL.createObjectURL(file),
           url: reader.result,
-        }); // สร้าง ID เฉพาะ
+        }); // ສ້າງ ID ສະເພາະ
         newImageFiles.push(file);
 
-        // อัปเดต state เมื่ออ่านไฟล์เสร็จ
+        // ອັບເດດ state ເມື່ອອ່ານໄຟລ໌ສຳເລັດ
         if (newImagePreviews.length === files.length) {
           setImagePreviews([...imagePreviews, ...newImagePreviews]);
           setImageFiles([...imageFiles, ...newImageFiles]);
@@ -69,7 +69,7 @@ function CarRental() {
     setImageFiles(updatedFiles);
   };
 
-  // สร้างฟอร์ม
+  // ສ້າງຟອມ
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -79,6 +79,44 @@ function CarRental() {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [zipcode, setZipcode] = useState("");
+  
+  // ຕົວຈັດການສຳລັບແຕ່ລະຊ່ອງປ້ອນຂໍ້ມູນ
+  const handleFirstNameChange = (e) => {
+    setFirstName(e.target.value);
+  };
+  
+  const handleLastNameChange = (e) => {
+    setLastName(e.target.value);
+  };
+  
+  const handlePhoneChange = (e) => {
+    setPhone(e.target.value);
+  };
+  
+  const handleAgeChange = (e) => {
+    setAge(e.target.value);
+  };
+  
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+  
+  const handleCountryChange = (e) => {
+    setCountry(e.target.value);
+  };
+  
+  const handleAddressChange = (e) => {
+    setAddress(e.target.value);
+  };
+  
+  const handleCityChange = (e) => {
+    setCity(e.target.value);
+  };
+  
+  const handleZipcodeChange = (e) => {
+    setZipcode(e.target.value);
+  };
+  
   const handleConfirmation = (e) => {
     e.preventDefault();
     Swal.fire({
@@ -96,38 +134,39 @@ function CarRental() {
       }
     });
   };
-  const handleSubmit = async  (e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!firstName.trim()) {
-      setError("First Name is required.");
+      setError("ກະລຸນາປ້ອນຊື່.");
       return;
     } else if (!lastName.trim()) {
-      setError("last Name is required.");
+      setError("ກະລຸນາປ້ອນນາມສະກຸນ.");
       return;
     } else if (!phone.trim() || phone.length !== 11) {
-      setError("phone is required 11.");
+      setError("ເບີໂທຕ້ອງມີ 11 ຕົວເລກ.");
       return;
     } else if (!age.trim() || age <= 17) {
-      setError("age is required 18+.");
+      setError("ອາຍຸຕ້ອງ 18 ປີຂຶ້ນໄປ.");
       return;
     }else if (!email.trim()) {
-      setError("email is required.");
+      setError("ກະລຸນາປ້ອນອີເມວ.");
       return;
     }else if (!country.trim()) {
-      setError("country is required.");
+      setError("ກະລຸນາປ້ອນປະເທດ.");
       return;
     }else if (!address.trim()) {
-      setError("address is required.");
+      setError("ກະລຸນາປ້ອນທີ່ຢູ່.");
       return;
     }else if (!city.trim()) {
-      setError("city is required.");
+      setError("ກະລຸນາປ້ອນເມືອງ.");
       return;
     }else if (!zipcode.trim()) {
-      setError("zipcode is required.");
+      setError("ກະລຸນາປ້ອນລະຫັດໄປສະນີ.");
       return;
     } else if (imageFiles.length === 0) {
-      setError("Please upload at least one image.");
+      setError("ກະລຸນາອັບໂຫລດຮູບພາບຢ່າງໜ້ອຍໜຶ່ງຮູບ.");
       return;
     }  
     const formData = new FormData();
@@ -162,17 +201,21 @@ function CarRental() {
       },
     });
 
+    // ສົ່ງຂໍ້ມູນໄປຫາ API
     const response = await fetch("http://localhost:8000/api/form", {
       method: "POST",
       body: formData,
       headers: {
-        Accept: "application/json",
+        'Accept': 'application/json',
+        // ບໍ່ຕ້ອງກຳນົດ Content-Type ເມື່ອໃຊ້ FormData
+        // ເບາວເຊີຈະກຳນົດ Content-Type: multipart/form-data ແລະ boundary ໃຫ້ອັດຕະໂນມັດ
       },
     });
 
+    // ກວດສອບຄຳຕອບຈາກ API
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText);
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'ມີຂໍ້ຜິດພາດໃນການສົ່ງຂໍ້ມູນ');
     }
 
     const data = await response.json();
@@ -193,7 +236,7 @@ function CarRental() {
     Swal.fire({
       icon: "error",
       title: "ເກີດຄວາມຜິດພາດຂຶ້ນ.",
-      text: "Email ຫຼື Phone ຊ້ຳ",
+      text: errors.message || "Email ຫຼື Phone ຊ້ຳ",
       confirmButtonText: "ລອງອີກຄັ້ງ",
     });
   }
@@ -205,7 +248,7 @@ function CarRental() {
       if (Array.isArray(response.data.data)) {
         setCarList(response.data.data);
       } else {
-        throw new Error("Invalid data format received from the server");
+        throw new Error("ຮູບແບບຂໍ້ມູນທີ່ໄດ້ຮັບຈາກເຊີບເວີບໍ່ຖືກຕ້ອງ");
       }
     } catch (err) {
       setError(err.message);
@@ -253,7 +296,7 @@ function CarRental() {
       <div className="info-from">
         <div className="car-rental-container">
           {carList
-            .filter((car) => car.car_id === index) // กรองเฉพาะรถที่ตรงกับ car_id
+            .filter((car) => car.car_id === index) // ກອງສະເພາະລົດທີ່ຕົງກັບ car_id
             .map((car) => (
               <div key={car.car_id} className="car-rental-card">
                 <h2>{car.car_name}</h2>
@@ -268,31 +311,31 @@ function CarRental() {
                     <li>
                       ລາຄາລວມ: {days} ມື້ {total} ກີບ
                     </li>
-                    <li>ສະຖານະ: {car.car_status}</li>
+                    <li>ສະຖານະ: {car.car_status === "Available" ? "ມີພ້ອມ" : "ບໍ່ມີພ້ອມ"}</li>
                   </ul>
                 </div>
                 <div className="car-info">
                   <div>
-                    <h1>Confirm Your Booking Details</h1>
+                    <h1>ຢືນຢັນລາຍລະອຽດການຈອງຂອງທ່ານ</h1>
                     <div>
                       <p>
                         <strong>ບ່ອນຮັບ-ສົ່ງລົດ:</strong>{" "}
-                        {pickUpandDropoff || "Not Provided"}
+                        {pickUpandDropoff || "ບໍ່ມີຂໍ້ມູນ"}
                       </p>
                       <p>
-                        <strong>ວັນຮັບລົດ:</strong> {pickTime || "Not Provided"}
+                        <strong>ວັນຮັບລົດ:</strong> {pickTime || "ບໍ່ມີຂໍ້ມູນ"}
                       </p>
                       <p>
                         <strong>ວັນສົ່ງລົດ:</strong>{" "}
-                        {dropTime || "Not Provided"}
+                        {dropTime || "ບໍ່ມີຂໍ້ມູນ"}
                       </p>
                       <p>
                         <strong>ເວລາຮັບລົດ:</strong>{" "}
-                        {startTime || "Not Provided"}
+                        {startTime || "ບໍ່ມີຂໍ້ມູນ"}
                       </p>
                       <p>
                         <strong>ເວລາສົ່ງລົດ:</strong>{" "}
-                        {endTime || "Not Provided"}
+                        {endTime || "ບໍ່ມີຂໍ້ມູນ"}
                       </p>
                     </div>
                   </div>
@@ -302,127 +345,128 @@ function CarRental() {
         </div>
         <div className="from">
           <form onSubmit={handleConfirmation} className="form-container">
-            <h2 className="form-title">PERSONAL INFORMATION</h2>
+            <h2 className="form-title">ຂໍ້ມູນສ່ວນຕົວ</h2>
             <div className="form-group">
-              <label>First Name *</label>
+              <label>ຊື່ *</label>
               <input
                 type="text"
                 name="first_name"
-                placeholder="Enter your first name"
+                placeholder="ປ້ອນຊື່ຂອງທ່ານ"
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />{" "}
-              {error && (
+                onChange={handleFirstNameChange}
+                style={{ zIndex: 100, position: 'relative' }}
+              />
+              {error && error.includes("ຊື່") && (
                 <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
               )}
             </div>
 
             <div className="form-group">
-              <label>Last Name *</label>
+              <label>ນາມສະກຸນ *</label>
               <input
                 type="text"
                 name="last_name"
-                placeholder="Enter your last name"
+                placeholder="ປ້ອນນາມສະກຸນຂອງທ່ານ"
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={handleLastNameChange}
+                style={{ zIndex: 100, position: 'relative' }}
               />
-              {error && (
+              {error && error.includes("ນາມສະກຸນ") && (
                 <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
               )}
             </div>
 
             <div className="form-grid">
               <div className="form-group">
-                <label>Phone Number *</label>
+                <label>ເບີໂທລະສັບ *</label>
                 <input
                   type="tel"
                   name="phone_number"
-                  placeholder="Enter your phone number"
+                  placeholder="ປ້ອນເບີໂທລະສັບຂອງທ່ານ"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={handlePhoneChange}
                 />
-                {error && (
+                {error && error.includes("ເບີໂທ") && (
                   <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
                 )}
               </div>
 
               <div className="form-group">
-                <label>Age *</label>
+                <label>ອາຍຸ *</label>
                 <input
                   type="text" inputmode="numeric" pattern="[0-9]*"
                   name="age"
-                  
-                  placeholder="Enter your age"
+                  placeholder="ປ້ອນອາຍຸຂອງທ່ານ"
                   value={age}
-                  onChange={(e) => setAge(e.target.value)}
+                  onChange={handleAgeChange}
                 />
-                {error && (
+                {error && error.includes("ອາຍຸ") && (
                   <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
                 )}
               </div>
             </div>
             <div className="form-group">
-              <label>email *</label>
+              <label>ອີເມວ *</label>
               <input
                 type="email"
                 name="email"
-                placeholder="Enter your email address"
+                placeholder="ປ້ອນທີ່ຢູ່ອີເມວຂອງທ່ານ"
                 value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
               />
-                              {error && (
-                  <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
-                )}
+              {error && error.includes("ອີເມວ") && (
+                <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
+              )}
             </div>
             <div className="form-group">
-              <label>Country *</label>
+              <label>ປະເທດ *</label>
               <input
                 type="text"
                 name="Country"
-                placeholder="Enter your Country"
+                placeholder="ປ້ອນປະເທດຂອງທ່ານ"
                 value={country}
-                  onChange={(e) => setCountry(e.target.value)}
+                onChange={handleCountryChange}
               />
-                             {error && (
-                  <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
-                )}
+              {error && error.includes("ປະເທດ") && (
+                <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
+              )}
             </div>
             <div className="form-group">
-              <label>Address *</label>
+              <label>ທີ່ຢູ່ *</label>
               <input
                 type="text"
                 name="address"
-                placeholder="Enter your street address"
+                placeholder="ປ້ອນທີ່ຢູ່ຂອງທ່ານ"
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                onChange={handleAddressChange}
               />
-                              {error && (
-                  <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
-                )}
+              {error && error.includes("ທີ່ຢູ່") && (
+                <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
+              )}
             </div>
               <div className="form-group">
-                <label>City *</label>
+                <label>ເມືອງ *</label>
                 <input
                   type="text"
                   name="city"
-                  placeholder="Enter your city"
+                  placeholder="ປ້ອນເມືອງຂອງທ່ານ"
                   value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  onChange={handleCityChange}
                 />
-                                {error && (
+                {error && error.includes("ເມືອງ") && (
                   <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
                 )}
               </div>
               <div className="form-group">
-                <label>Post code *</label>
+                <label>ລະຫັດໄປສະນີ *</label>
                 <input
                   type="number"
                   name="zipcode"
-                  placeholder="Enter your zip code"
+                  placeholder="ປ້ອນລະຫັດໄປສະນີຂອງທ່ານ"
                   value={zipcode}
-                  onChange={(e) => setZipcode(e.target.value)}
+                  onChange={handleZipcodeChange}
                 />
-                {error && (
+                {error && error.includes("ລະຫັດໄປສະນີ") && (
                   <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
                 )}
               </div>
@@ -433,8 +477,8 @@ function CarRental() {
                 name="image"
                 accept="image/*"
                 onChange={handleImageChange}
-                multiple // อนุญาตให้เลือกหลายไฟล์
-                disabled={imageFiles.length >= 1} // ปิดการใช้งาน input หากมีรูปภาพครบ 3 รูปแล้ว
+                multiple // ອະນຸຍາດໃຫ້ເລືອກຫຼາຍໄຟລ໌
+                disabled={imageFiles.length >= 1} // ປິດການໃຊ້ງານ input ຫາກມີຮູບພາບຄົບ 1 ຮູບແລ້ວ
               />
               <div
                 style={{ display: "flex", flexWrap: "wrap", marginTop: "10px" }}
@@ -479,7 +523,7 @@ function CarRental() {
             </div>
 
             <button type="submit" className="submit-button">
-              Submit
+              ສົ່ງຂໍ້ມູນ
             </button>
           </form>
         </div>

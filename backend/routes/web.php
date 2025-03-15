@@ -13,6 +13,8 @@ use App\Http\Controllers\admin\DashboardCtrl as DashboardCtrl;
 use App\Http\Controllers\manager\CarCtrl as managercarCtrl;
 use App\Http\Controllers\manager\UserCtrl as managerUserCtrl;
 use App\Http\Controllers\Manager\ManagerCtrl as ManagerCtrl;
+// Contact
+use App\Http\Controllers\ContactFormController;
 
 
 /*
@@ -30,8 +32,17 @@ Route::get('/', function () {
     return view('login');
     
 });
+
+
+
 //Admin
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], function () {
+    // Contact Routes
+    Route::get('/contact', [ContactFormController::class, 'index'])->name('contact');
+    Route::post('/contact', [ContactFormController::class, 'store'])->name('contact.store');
+
+    // API Contact Route for React Frontend
+    Route::post('/api/contact', [ContactFormController::class, 'store']);
     //admin manager
     Route::get('/viewmanager', [AdminManagerCtrl::class, 'viewmanager'])->name('admin.viewmanager');
     Route::get('/editmanager', [AdminManagerCtrl::class, 'editmanager'])->name('admin.editmanager');
@@ -54,6 +65,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
     Route::get('/vieworder', [AdmincarCtrl::class, 'vieworder'])->name('admin.vieworder');
     Route::get('/deletecar/{id}', [AdmincarCtrl::class, 'deletecar'])->name('admin.deletecar');
     
+    // Contact Messages Management
+    Route::get('/messages', [ContactFormController::class, 'viewMessages'])->name('admin.messages');
+    Route::post('/messages/{id}/read', [ContactFormController::class, 'markAsRead'])->name('admin.messages.read');
+    Route::post('/messages/{id}/replied', [ContactFormController::class, 'markAsReplied'])->name('admin.messages.replied');
+    Route::delete('/messages/{id}', [ContactFormController::class, 'deleteMessage'])->name('admin.messages.delete');
 });
 
 // Manager

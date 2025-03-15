@@ -75,7 +75,7 @@ function BookCar() {
   const opensearch = (e) => {
     e.preventDefault();
     if (pickUpandDropoff === "" || pickTime === "" || dropTime === "" ) {
-      alert("All fields are required!");
+      alert("ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບທຸກຊ່ອງ!");
     } else {
       navigate("/booking", {
         state: {
@@ -119,7 +119,7 @@ function BookCar() {
             transition={{ delay: 0.3, duration: 0.5 }}
             className="text-4xl font-extrabold mb-8 text-center text-gray-800"
           >
-            Find Your <span className="text-orange-500">Perfect Ride</span>
+            ຄົ້ນຫາ <span className="text-orange-500">ລົດທີ່ເໝາະສົມ</span>
           </motion.h2>
           
           <form onSubmit={opensearch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
@@ -238,7 +238,7 @@ function BookCar() {
                 type="submit"
                 className="w-full bg-orange-500 text-white font-bold py-5 px-6 rounded-xl hover:bg-orange-600 active:bg-orange-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 text-xl shadow-lg"
               >
-                Search Available Cars
+                ຄົ້ນຫາລົດທີ່ມີພ້ອມ
               </button>
             </motion.div>
           </form>

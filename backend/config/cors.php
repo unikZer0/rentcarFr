@@ -15,11 +15,14 @@ return [
     |
     */
 
-    'paths' => ['*'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'http://localhost:3000', 
+        'http://tubcarrental.com', 
+        'https://tubcarrental.com'],
 
     'allowed_origins_patterns' => [],
 

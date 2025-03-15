@@ -40,7 +40,7 @@ function Booking_begin() {
         if (Array.isArray(response.data.data)) {
           setCarList(response.data.data);
         } else {
-          throw new Error("Invalid data format received from the server");
+          throw new Error("ຮູບແບບຂໍ້ມູນທີ່ໄດ້ຮັບຈາກເຊີບເວີບໍ່ຖືກຕ້ອງ");
         }
       } catch (err) {
         setError(err.message);
@@ -81,7 +81,7 @@ function Booking_begin() {
       Swal.fire({
         icon: "error",
         title: "ກະລຸນາປ້ອນທຸກຂໍ້ມູນ",
-        text: "All fields are required!",
+        text: "ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບທຸກຊ່ອງ!",
       });
     } else {
       const { days, total } = calculateDaysAndTotal(
@@ -93,7 +93,7 @@ function Booking_begin() {
         Swal.fire({
           icon: "error",
           title: "ກະລຸນາກວດສອບວັນທີຕ້ອງ1ມື້ຂື້ນ",
-          text: "Invalid date or price calculation!",
+          text: "ວັນທີບໍ່ຖືກຕ້ອງ ຫຼື ການຄິດໄລ່ລາຄາບໍ່ຖືກຕ້ອງ!",
         });
       } else {
         navigate("/from", {
@@ -193,7 +193,7 @@ function Booking_begin() {
                           car.car_status === "Available" ? "status-available" : "status-unavailable"
                         }`}
                       >
-                        {car.car_status}
+                        {car.car_status === "Available" ? "ມີພ້ອມ" : "ບໍ່ມີພ້ອມ"}
                       </span>
                     </div>
                   </div>
